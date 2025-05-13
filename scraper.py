@@ -1,0 +1,26 @@
+import requests
+from bs4 import BeautifulSoup
+import csv
+
+#url alvo
+url = 'https://books.toscrape.com/'
+
+resposta = requests.get(url)
+resposta.encoding = 'UTF-8'
+
+soup = BeautifulSoup(resposta.text, 'html.parser')
+
+livros = soup.find_all('article', class_='product_pod')
+
+
+
+with open('relatorio.csv', 'w' , newline='', encoding='UTF-8') as csvfile:
+    escritor = csv.writer(csvfile)
+    
+    escritor.writerow(['Título', 'preco', 'link'])
+
+    for livro in livros:
+        titulo = livro.h3.a['title']
+        link = livro.h3.a['href']
+        preco = livro.find('p', class_='price_color').text
+        escritor.writerow([titulo, preco, url+link])   
